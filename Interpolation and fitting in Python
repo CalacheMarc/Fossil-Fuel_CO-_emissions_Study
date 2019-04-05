@@ -1,0 +1,39 @@
+# 1. a scatter plot of original data
+import os; #provides functions for interacting with the operating system
+import pandas # this package allows us to work with two-dimensional data rather than one-dimensional data.
+import numpy as np
+import matplotlib.pyplot as plt # this package allows us to graph data
+year=[2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014]
+emissions=[7743,8042,8336,8503,8776,8697,9128,9503,9673,9773,9855]
+fig=plt.figure(figsize=(15, 10)) #makes the figure bigger
+plt.scatter(year, emissions, label="Data")
+
+# 2. Interpolating polynomial fitting through data 
+from scipy import interpolate  
+xp=np.linspace(2004,2014,100) # xp will be the interval for all polynomials. 
+# 100 points will be calculated to draw the function.
+# polyfit to find the coeffs, poly1d to write the complete polynome with x and coeffs
+# Let's take a Polynomial of Dimension 3
+P = np.poly1d(np.polyfit(year, emissions,3))
+#polyval takes the coeffs of the polynomial and put them in a list
+poly=plt.plot(xp, np.polyval(P,xp), label="Interpolat poly")
+
+#Degree 5 least squares fitting polynomial
+P5 = np.poly1d(np.polyfit(year, emissions,5)) 
+print("P5=", P5)
+poly5=plt.plot(xp, np.polyval(P5,xp), label="least squares °5")
+
+#4. Cubic Spline using CubicSpline (Cubic spline data interpolator)
+from scipy.interpolate import CubicSpline
+cs = CubicSpline(year, emissions)
+CubicSpline=plt.plot(xp, cs(xp), label="CubicSpline")
+#We can see that Cubic Spline is much more precise than the cubic polynomial method
+
+#5. Cubic Spline using PchipInterpolator (Monotonic cubic interpolation)
+from scipy import interpolate
+pchip_interp  =   interpolate.PchipInterpolator(year, emissions, extrapolate=True )
+plt.plot(xp,pchip_interp(xp), label="PchipInterpolator")
+
+#This will draw the funcions in the graph. I put it at the very end so that all functions and legend are inside the same graph
+plt.legend(loc='lower right', ncol=2)
+plt.show() 
